@@ -1,0 +1,86 @@
+#%RAML 1.0
+baseUri: https://mocksvc.mulesoft.com/mocks/0b426e2f-8c2d-4964-9e74-b6c7f9c672fa/api/v1 # baseUri: /api/v1
+title: Getting Account Details
+description: API for getting account information
+version: v1
+protocols: [HTTPS]
+mediaType: application/json
+
+#Library it uses to import in this file
+uses: 
+  libarary: accountlibrary.raml
+
+#Basic security schemes
+securitySchemes: 
+  basic:
+   description: This API support basic authentication
+   type: Basic Authentication
+
+#Resources and error scenerios
+/accounts: 
+ get:
+  description: either xml or json
+  headers: 
+    Accept:
+     type: string
+     default: 
+      application/json     
+  queryParameters: 
+    transferIn: boolean
+    transferOut: boolean
+    page: integer   
+  securedBy: basic
+  responses: 
+    200:
+     body:
+      application/json:
+       type: libarary.accounts
+       description: This is response for correct data.
+       example: !include accountexample.raml
+    400:
+     body:
+      application/json:
+       type: libarary.error
+       example: 
+         {
+            "code"    : "400",
+            "message" : "Bad Request!! please enter valid query                               parameter"
+         }
+         
+    401:
+     body:
+      application/json:
+       type: libarary.error
+       example:
+        {
+            "code"    : "401",
+            "message" : "Unauthorized error!! Please enter valid                              user name & password"
+        }
+    404:
+     body: 
+       application/json:
+        type: libarary.error
+        example:
+           {
+             "code"    : "404",
+             "message" : "Account not found"
+           } 
+    405:
+     body:
+      application/json:
+       type: libarary.error
+       example:
+         {
+           "code"  : "405",
+           "message" : "Method not allowed,please check and verify                           you request"
+         }
+    500:
+     body:
+      application/json:
+       type: libarary.error
+       example:
+         {
+           "code" : "500",
+           "message" : "Internal Server Error"
+         }
+       
