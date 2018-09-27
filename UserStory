@@ -1,0 +1,146 @@
+User Story  :- 09
+
+Create an api to get account information which are not eligible for transferIn and transferOut
+
+1. Requirement Analysis – Identify the Request and Response data 
+2. Create Raml to get account information which are not eligible for transferIn and transferOut
+3. Create Spring boot App to get account information which are not eligible for transferIn and transferOut
+  a. Retrieve Data from DB table
+  b. Push Data to the Queue before exposing Data through API
+  c. Retrieve data from soap endpoint and expose as Rest API  
+4.Handle exceptions,logging  and other Non Functional Requirements(Security) as requested.
+
+
+Request fields
+
+GET /account 
+Accept: application/json
+transferIn=false&tranferOut=false&page=1
+
+
+Response fields
+
+Response
+HTTP/1.1 200 OK
+Content-Type: application/json; charset=utf-8
+{  
+            "Accounts" : {
+            "Total" : "1",
+            "TotalPages" : "1",
+            "Page" : "1",
+            "Account" : [
+              {
+                    "AccountId" : "1357902468",
+			  "AccountType" : "SAVINGS",
+			  "DisplayName" : "Saving Account",
+			  "Status" : "Open",
+                    "Nickname" : "My Savings Account",
+                    "LineOfBusiness" : "consumer",
+                    "AccountNumber" : "4561237890",
+                    "TransferIn" : "0",
+                    "TransferOut" : "0",
+  			  "Currency" : "INR",
+
+                    "InterestRate" : "3",
+        		  "InterestRateType" : "FIXED"
+
+
+              },
+              {
+                    "AccountId" : "1357902469",
+			  "AccountType" : "LOAN",
+			  "DisplayName" : "Loan Account",
+			  "Status" : "Open",
+                    "Nickname" : "My Loan Account",
+                    "LineOfBusiness" : "consumer",
+                    "AccountNumber" : "4561237893",
+                    "TransferIn" : "0",
+                    "TransferOut" : "0",
+			  "Currency" : "INR",
+                    "InterestRate" : "3",
+			  "InterestRateType" : "FIXED"
+
+              }
+            ]
+          }
+        }
+
+
+
+
+Success and Error scenarios
+
+
+200 : Success
+
+Response
+HTTP/1.1 200 OK
+Content-Type: application/json; charset=utf-8
+{
+  code : ”200”
+  message : “Account information found successful”
+}
+
+
+400:
+ {
+  "code"    : "400",
+  "message" : "Bad Request!! please enter valid query parameter”                                
+ }
+         
+    401:
+        {
+         "code"    : "401",
+         "message" : "Unauthorized error!! Please enter valid      user name & password"
+        }
+
+    404:
+        {
+             "code"    : "404",
+             "message" : "Account not found"
+         } 
+
+    405:
+        {
+           "code"  : "405",
+           "message" : "Method not allowed, please check and verify you request"
+         }
+
+    500:
+         {
+           "code" : "500",
+           "message" : "Internal Server Error"
+         }
+
+
+
+Tables:- 
+
+AccountDescriptor
+
+        Field	        Type
+         AccountId	    String(unique key)
+       AccountType 	Accounttype(ESOP,GUARDIAN,HOMEQUITYLOAN)
+       DisplayName		string
+       Description  	string
+       Status   	AccountStatus (String,CLOSED,OPEN,PAID)
+        AccountDescriptorId	int(primary Key)
+        CustomerId	string
+
+
+
+Account 
+
+        Field	        Type
+         AccountMasterId	string(primary key)
+       ParentAccountId 	string
+         Nickname	string
+         LineOfBusiness	string
+       AccountNumber   	string(unique key)
+
+       InterestRate	int
+         Currency	varchar
+      AccDescriptorId	int (Foreign Key)
+         TransferIn	Boolean
+         TransferOut	Boolean
+        InterestRateType	String(FIXED,VARIABLE)
