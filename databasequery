@@ -1,0 +1,5 @@
+select accountId,accountType,DisplayName,TransferIn,TransferOut,Status,
+Nickname,LineOfBusiness,AccountNumber,Currency,InterestRate,InterestRateType
+from accountdescriptor as ad
+inner join  account as ac on  ad.AccountDescriptorId = ac.AccDescriptorId
+where ac.TransferIn=0 and ac.TransferOut=0;
