@@ -1,0 +1,26 @@
+INSERT INTO `userstory9`.`accountdescriptor`
+(`AccountId`,
+`AccountType`,
+`DisplayName`,
+`Description`,
+`Status`,
+`AccountDescriptorId`,
+`CustomerId`)
+VALUES
+(1357902472, "LOAN","Loan Account","Loan Account","OPEN", 115, 111111105);
+INSERT INTO `userstory9`.`account`
+(`AccountMasterId`,
+`ParentAccountId`,
+`Nickname`,
+`LineOfBusiness`,
+`AccountNumber`,
+`InterestRate`,
+`Currency`,
+`AccDescriptorId`,
+`TransferIn`,
+`TransferOut`,
+`InterestRateType`)
+VALUE
+(204, 2468135794, "My Loan Account", "consumer", "4561237894", 8, "INR", 115, 0, 0, "VARIABLE");
+
+
