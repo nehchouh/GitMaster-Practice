@@ -1,0 +1,75 @@
+package com.app.accountinformation.service;
+
+import java.util.List;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.client.RestTemplate;
+
+
+/*import com.app.accountinformation.SimpleRpcProducerRabbitApplication;*/
+import com.app.accountinformation.model.Account;
+
+@Service
+public class AccountInformationServiceImpl{
+
+	@PersistenceContext
+	EntityManager manager;
+	
+	/*@Autowired
+	SimpleRpcProducerRabbitApplication producer;*/
+	
+	
+	@ResponseBody
+	public List<Account> getAccounts(Boolean transferIn, Boolean transferOut,Integer page) {
+
+        System.out.println("In The Service Class");
+        StringBuffer sb = new StringBuffer();
+        sb.append(" select AccountDescriptorId,AccountId,AccountType,DisplayName,TransferIn,TransferOut,Status, ");
+        sb.append(" Nickname,LineOfBusiness,AccountNumber,Currency,InterestRate,InterestRateType,Description,ParentAccountId ");
+        sb.append(" from accountdescriptor as ad ");
+        sb.append(" inner join  account as ac on  ad.AccountDescriptorId = ac.AccDescriptorId ");
+        sb.append(" where ac.TransferIn="+transferIn+" and ac.TransferOut="+transferOut);
+       
+        Query q1= manager.createNativeQuery(sb.toString(),Account.class );
+       
+        List<Account> accountList =q1.getResultList();
+        
+        /*RestTemplate template = new RestTemplate(new HttpComponentsClientHttpRequestFactory());
+		ResponseEntity<String> entity = template.getForEntity("http://localhost:8081/api/accounts/pagination?transferIn=false&transferOut=false&page=2", String.class);
+    	String body = entity.getBody();
+    	MediaType contentType = entity.getHeaders().getContentType();
+    	HttpStatus statusCode = entity.getStatusCode();*/
+    	
+        List<Account> accounts;
+        int startIndex = page*2-2, lastIndex = page*2;
+        
+        if(lastIndex == accountList.size() + 1) {
+        	accounts = accountList.subList(startIndex, lastIndex-1);
+        }else if(startIndex < 0 || lastIndex > accountList.size()) {
+        	
+        	throw new IndexOutOfBoundsException("Please Enter Valid page number");
+        }else {
+        	accounts = accountList.subList(startIndex, lastIndex);
+        }
+        	
+        System.out.println(accountList.get(0));
+        
+       
+       // producer.sendMessage(accounts);
+        
+		return accounts ;
+	}
+	
+	
+
+}
